@@ -1,0 +1,25 @@
+{
+    "sqltools.connections": [
+      {
+        "name": "COMP373",
+        "driver": "MySQL",
+        "server": "comp373.cianci.io",
+        "port": 3306,
+        "database": "comp373",
+        "username": "kpapa",
+        "password": "firm-limited-eye",
+  
+        // -- these belong at the top level, not under mysqlOptions --
+        "localInfile": true,
+        "streamFactory": "LocalFileReadFactory",
+  
+        "mysqlOptions": {
+          "authProtocol": "default",
+          "enableSsl": "Disabled"
+        },
+  
+        "previewLimit": 50
+      }
+    ]
+  }
+  
