@@ -13,7 +13,7 @@ def build_tfidf_matrix():
         port=3306
     )
     cursor = conn.cursor(dictionary=True)
-    # Updated query: remove 'id' from the SELECT list
+    # Remove 'id' from the SELECT list
     cursor.execute("SELECT title, overview FROM BC_KP_DatabaseProject")
     rows = cursor.fetchall()
     cursor.close()
@@ -28,10 +28,9 @@ def build_tfidf_matrix():
     return df, tfidf_matrix, tfidf
 
 def get_similar_movies(input_movie_title, df, tfidf_matrix, tfidf, top_n=10):
-    # Find the index of the movie using the title
     idx_list = df.index[df['title'] == input_movie_title].tolist()
     if not idx_list:
-        return pd.DataFrame()  # Return empty DataFrame if not found
+        return pd.DataFrame() 
     idx = idx_list[0]
     
     # Compute cosine similarity between this movie and all others

@@ -2,12 +2,12 @@ import streamlit as st
 import pandas as pd
 from login import login_sidebar, connect_db  # ✅ Shared login logic
 
-# --- Login ---
+# Login
 login_sidebar()
 user_id = st.session_state.get("user_id")
 username = st.session_state.get("username")
 
-# --- UI ---
+# UI
 st.title("📺 Your Watchlist")
 
 st.sidebar.markdown("---")
@@ -16,7 +16,7 @@ if username:
 else:
     st.sidebar.warning("Login to view your watchlist")
 
-# --- Load user watchlist ---
+# Load user watchlist
 def load_watchlist(user_id):
     conn = connect_db()
     wl = pd.read_sql(f"""
@@ -33,7 +33,7 @@ def load_watchlist(user_id):
     conn.close()
     return wl
 
-# --- Main content ---
+# Main content
 if user_id:
     wl = load_watchlist(user_id)
     if wl.empty:

@@ -3,7 +3,6 @@ import pandas as pd
 
 def load_movies_raw(csv_path: str):
     """Load cleaned CSV into the movies_raw staging table."""
-    # Connect to MySQL
     conn = mysql.connector.connect(
         host='comp373.cianci.io',
         port=3306,

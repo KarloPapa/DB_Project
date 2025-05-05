@@ -14,24 +14,23 @@ class RecommenderWindow(QWidget):
         self.setWindowTitle("Movie Recommender")
         self.resize(800, 600)
         self.initUI()
-        # Build the TF-IDF matrix once on startup for recommendations by overview
         self.df, self.tfidf_matrix, self.tfidf = build_tfidf_matrix()
 
     def initUI(self):
-        # Create a tab widget for two modes: Title Search and Filter Search.
+        # Tab widget for title Search and filter Search.
         self.tabs = QTabWidget(self)
         self.tabTitleSearch = QWidget()
         self.tabFilterSearch = QWidget()
         self.tabs.addTab(self.tabTitleSearch, "Search by Title")
         self.tabs.addTab(self.tabFilterSearch, "Filter by Preferences")
 
-        # ----- Title Search Tab -----
+        # Title Search Tab 
         titleLayout = QVBoxLayout()
         formLayout = QHBoxLayout()
         self.titleLabel = QLabel("Movie Title:")
         self.titleInput = QLineEdit()
         self.searchButton = QPushButton("Search")
-        # This button triggers the genre-based search by title
+        # Triggers the genre-based search by title
         self.searchButton.clicked.connect(self.get_similar_movies_by_title)
         formLayout.addWidget(self.titleLabel)
         formLayout.addWidget(self.titleInput)
@@ -40,13 +39,13 @@ class RecommenderWindow(QWidget):
         
         # Table to display title search results
         self.titleTable = QTableWidget()
-        # Set 5 columns: the last for the See Overview button
+        # Set 5 columns
         self.titleTable.setColumnCount(5)
         self.titleTable.setHorizontalHeaderLabels(["Title", "Release Date", "Genres", "Rating", "Actions"])
         titleLayout.addWidget(self.titleTable)
         self.tabTitleSearch.setLayout(titleLayout)
 
-        # ----- Filter Search Tab -----
+        # Filter Search Tab
         filterLayout = QVBoxLayout()
         gridLayout = QGridLayout()
         
@@ -80,7 +79,7 @@ class RecommenderWindow(QWidget):
         filterLayout.addWidget(self.filterTable)
         self.tabFilterSearch.setLayout(filterLayout)
 
-        # ----- Main Layout -----
+        # Main Layout
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(self.tabs)
         self.setLayout(mainLayout)
@@ -112,7 +111,7 @@ class RecommenderWindow(QWidget):
             return
         cursor = connection.cursor(dictionary=True)
         try:
-            # Search for the movie by title (limit to 1 result)
+            # Search for the movie by title
             query = "SELECT * FROM BC_KP_DatabaseProject WHERE title LIKE %s LIMIT 1"
             cursor.execute(query, ('%' + title + '%',))
             movie = cursor.fetchone()
@@ -148,7 +147,7 @@ class RecommenderWindow(QWidget):
             return
         cursor = connection.cursor(dictionary=True)
         try:
-            # Corrected query: removed extra comma before FROM
+            # Remove extra comma before FROM
             query = "SELECT title, release_date, genres, vote_average, overview FROM BC_KP_DatabaseProject WHERE 1=1"
             params = []
             if genre != "Any":
@@ -204,7 +203,6 @@ class RecommenderWindow(QWidget):
             
             overview_text = str(row_data.get("overview", ""))
             btn_overview = QPushButton("See Overview")
-            # Use a lambda with a default argument to capture overview_text
             btn_overview.clicked.connect(lambda _, text=overview_text: self.show_overview_popup(text))
             table.setCellWidget(row, 4, btn_overview)
 

@@ -1,15 +1,15 @@
--- 0) Sanity: initial staging count
+-- Sanity check initial staging count
 SELECT 
   COUNT(*) AS raw_row_count 
 FROM `comp373`.`movies_raw`;
 SELECT * FROM `comp373`.`movies_raw` LIMIT 10;
 
--- 1a) Drop old tables
+-- Drop old tables
 DROP TABLE IF EXISTS `comp373`.`movie_genre`;
 DROP TABLE IF EXISTS `comp373`.`genre`;
 DROP TABLE IF EXISTS `comp373`.`movies`;
 
--- 1a-check: ensure drops succeeded for movies
+-- Ensure drops succeeded for movies
 SELECT 
   IF(
     (SELECT COUNT(*) 
@@ -21,7 +21,7 @@ SELECT
     'ERROR: movies still exists'
   ) AS movies_drop_check;
 
--- 1b) Create movies table
+-- Create movies table
 CREATE TABLE `comp373`.`movies` (
   `movie_id`          INT AUTO_INCREMENT PRIMARY KEY,
   `tmdb_id`           INT            NOT NULL UNIQUE,
@@ -41,7 +41,7 @@ CREATE TABLE `comp373`.`movies` (
   FULLTEXT INDEX `ft_overview` (`overview`)
 ) ENGINE=InnoDB;
 
--- 1b-check: confirm creation of movies
+-- Confirm creation of movies
 SELECT 
   IF(
     (SELECT COUNT(*) 
@@ -53,7 +53,7 @@ SELECT
     'ERROR: movies creation failed'
   ) AS movies_create_check;
 
--- 1c) Populate movies from staging
+-- Populate movies from staging
 INSERT INTO `comp373`.`movies` (
     `tmdb_id`, `title`, `release_date`, `original_language`,
     `vote_average`, `vote_count`, `popularity`, `overview`,
@@ -65,24 +65,24 @@ SELECT
     `budget`, `revenue`, `runtime`, `tagline`
   FROM `comp373`.`movies_raw`;
 
--- 1c-check: rows inserted and totals
+-- Rows inserted and totals
 SELECT 
   ROW_COUNT()               AS inserted_into_movies,
   (SELECT COUNT(*) FROM `comp373`.`movies_raw`) AS raw_total,
   (SELECT COUNT(*) FROM `comp373`.`movies`)    AS movies_total;
 
--- 1d) Final movies check
+-- Final movies check
 SELECT 
   COUNT(*) AS final_movie_count 
 FROM `comp373`.`movies`;
 
--- 2a) Create genre lookup table
+-- Create genre lookup table
 CREATE TABLE `comp373`.`genre` (
   `genre_id` INT AUTO_INCREMENT PRIMARY KEY,
   `name`     VARCHAR(100) NOT NULL UNIQUE
 ) ENGINE=InnoDB;
 
--- 2a-check: confirm creation of genre
+-- Confirm creation of genre
 SELECT 
   IF(
     (SELECT COUNT(*) 
@@ -94,7 +94,7 @@ SELECT
     'ERROR: genre creation failed'
   ) AS genre_create_check;
 
--- 2b) Populate genre lookup from staging JSON
+-- Populate genre lookup from staging JSON
 INSERT IGNORE INTO `comp373`.`genre` (`name`)
 SELECT DISTINCT jt.genre_name
 FROM `comp373`.`movies_raw` AS mr
@@ -108,12 +108,12 @@ CROSS JOIN JSON_TABLE(
   )
 ) AS jt;
 
--- 2b-check: rows inserted into genre
+-- Rows inserted into genre
 SELECT 
   ROW_COUNT()               AS inserted_into_genre,
   (SELECT COUNT(*) FROM `comp373`.`genre`) AS genre_total;
 
--- 3a) Create movie_genre junction table
+-- Create movie_genre junction table
 CREATE TABLE `comp373`.`movie_genre` (
   `movie_id` INT NOT NULL,
   `genre_id` INT NOT NULL,
@@ -122,7 +122,7 @@ CREATE TABLE `comp373`.`movie_genre` (
   FOREIGN KEY (`genre_id`) REFERENCES `comp373`.`genre`  (`genre_id`)
 ) ENGINE=InnoDB;
 
--- 3a-check: confirm creation of movie_genre
+-- Confirm creation of movie_genre
 SELECT 
   IF(
     (SELECT COUNT(*) 
@@ -134,7 +134,7 @@ SELECT
     'ERROR: movie_genre creation failed'
   ) AS movie_genre_create_check;
 
--- 3b) Populate movie↔genre junction
+-- Populate movie↔genre junction
 INSERT IGNORE INTO `comp373`.`movie_genre` (`movie_id`, `genre_id`)
 SELECT m.movie_id
      , g.genre_id
@@ -153,7 +153,7 @@ CROSS JOIN JSON_TABLE(
 JOIN `comp373`.`genre` AS g
   ON g.name = jt.name;
 
--- 3b-check: rows inserted into movie_genre
+-- Rows inserted into movie_genre
 SELECT 
   ROW_COUNT()                     AS inserted_into_movie_genre,
   (SELECT COUNT(*) FROM `comp373`.`movie_genre`) AS junction_total;

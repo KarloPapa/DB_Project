@@ -4,15 +4,15 @@ import mysql.connector
 from datetime import datetime
 from login import login_sidebar, connect_db  # ⬅️ import login logic
 
-# --- UI ---
+# UI
 st.title("🎬 Movie Explorer")
 
-# --- Login ---
+# Login
 login_sidebar()
 user_id = st.session_state.get("user_id")
 username = st.session_state.get("username")
 
-# --- Fetch dropdown/filter options ---
+# Fetch dropdown/filter options
 @st.cache_data
 def get_filter_options():
     conn = connect_db()
@@ -23,7 +23,7 @@ def get_filter_options():
     conn.close()
     return genres, companies, years, languages
 
-# --- Filters ---
+# Filters
 genres, companies, years, languages = get_filter_options()
 genre = st.selectbox("Filter by Genre", ["(Any)"] + genres)
 company = st.selectbox("Filter by Company", ["(Any)"] + companies)
@@ -33,7 +33,7 @@ min_rating = st.slider("Minimum Rating", 0.0, 10.0, 0.0)
 min_popularity = st.slider("Minimum Popularity", 0, 10000, 0)
 keyword = st.text_input("Search by keywords in description (overview)", "")
 
-# --- Reset form state on new search ---
+# Reset form state on new search
 if "reset_flag" not in st.session_state:
     st.session_state.reset_flag = False
 
@@ -43,7 +43,7 @@ def reset_form():
     st.session_state.user_rating = 0.0
     st.session_state.reset_flag = True
 
-# --- Build SQL Query ---
+# Build SQL Query
 conditions = [f"m.vote_average >= {min_rating}", f"m.popularity >= {min_popularity}"]
 if genre != "(Any)":
     conditions.append(f"g.name = '{genre}'")
@@ -72,7 +72,7 @@ WHERE {where_clause}
 LIMIT 100;
 """
 
-# --- Run query + store results ---
+# Run query + store results
 if st.button("Search"):
     reset_form()
     conn = connect_db()
@@ -91,7 +91,7 @@ if st.button("Search"):
     conn.close()
     st.session_state['last_results'] = df
 
-# --- Show results if we have them ---
+# Show results if we have them 
 if 'last_results' in st.session_state:
     df = st.session_state['last_results']
     st.write(f"### 🎉 Found {len(df)} matching movies")
@@ -106,7 +106,7 @@ if 'last_results' in st.session_state:
     else:
         st.warning("Overview not found for selected movie.")
 
-    # --- Watchlist & rating features ---
+    # Watchlist & rating features
     if user_id:
         selected_row = df[df["title"] == selected_title]
         if not selected_row.empty:

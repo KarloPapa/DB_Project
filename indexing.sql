@@ -16,7 +16,7 @@
 -- CREATE UNIQUE INDEX idx_company_name ON comp373.company(name);
 -- CREATE UNIQUE INDEX idx_language_name ON comp373.language(language_name);
 
--- Indexes for users
+-- Indexes for users (already ran)
 -- CREATE INDEX idx_user_movie ON user_movie_activity(user_id, movie_id);
 -- CREATE INDEX idx_rating_filter ON user_movie_activity(rating);
 

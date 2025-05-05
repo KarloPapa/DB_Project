@@ -12,13 +12,13 @@ FROM comp373.movies AS m
 JOIN comp373.movie_genre AS mg USING (movie_id)
 JOIN comp373.genre AS g USING (genre_id);
 
--- Check: Top 5 rows from movie_genre_view
+-- Check top 5 rows from movie_genre_view
 SELECT * 
 FROM comp373.movie_genre_view
 LIMIT 5;
 
 
--- Create view: aggregated genres per movie (no movie_id)
+-- Create aggregated genres per movie view
 CREATE OR REPLACE VIEW comp373.movies_with_genres AS
 SELECT 
   m.title,
@@ -28,7 +28,7 @@ JOIN comp373.movie_genre AS mg USING (movie_id)
 JOIN comp373.genre AS g USING (genre_id)
 GROUP BY m.title;
 
--- Check: Top 5 rows from movies_with_genres
+-- Check top 5 rows from movies_with_genres
 SELECT * 
 FROM comp373.movies_with_genres
 LIMIT 5;

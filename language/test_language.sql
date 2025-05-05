@@ -1,5 +1,3 @@
--- Testing SQL file: validate that language normalization was successful
-
 -- 1. Check that language table has been populated
 SELECT COUNT(*) AS language_count FROM comp373.language;
 

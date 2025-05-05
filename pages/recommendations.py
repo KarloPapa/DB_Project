@@ -5,19 +5,19 @@ from sklearn.metrics.pairwise import cosine_similarity
 from datetime import datetime
 from login import login_sidebar, connect_db
 
-# --- Login ---
+# Login
 login_sidebar()
 user_id = st.session_state.get("user_id")
 username = st.session_state.get("username")
 
-# --- Sidebar UI ---
+# Sidebar UI
 st.sidebar.markdown("---")
 if username:
     st.sidebar.success(f"✅ Logged in as `{username}`")
 else:
     st.sidebar.warning("Login to personalize recommendations")
 
-# --- Load and preprocess movie data ---
+# Load and preprocess movie data
 @st.cache_data
 def load_movie_profiles():
     conn = connect_db()
@@ -38,7 +38,7 @@ def load_movie_profiles():
                   df['overview'].fillna(''))
     return df
 
-# --- TF-IDF helper ---
+# TF-IDF helper
 def get_recommendations(df, tfidf_matrix, title, top_n=10):
     idx = df[df['title'] == title].index
     if idx.empty:
@@ -47,22 +47,22 @@ def get_recommendations(df, tfidf_matrix, title, top_n=10):
     scores = cosine_sim.argsort()[-(top_n+1):-1][::-1]
     return df.iloc[scores][['movie_id', 'title', 'genres', 'companies', 'overview']]
 
-# --- Load data and compute matrix ---
+# Load data and compute matrix 
 df = load_movie_profiles()
 tfidf = TfidfVectorizer(stop_words='english')
 matrix = tfidf.fit_transform(df['tags'])
 
-# --- UI Header ---
+# UI Header
 st.title("🎯 Movie Recommendations")
 st.markdown("Pick a movie you like, and we’ll recommend similar ones.")
 
-# --- Selection trigger ---
+# Selection trigger 
 selected_title = st.selectbox("🎬 Select a Movie:", df['title'].sort_values().unique())
 if st.button("🔍 Recommend"):
     st.session_state["recs_triggered"] = True
     st.session_state["selected_base"] = selected_title
 
-# --- Handle recommendation logic ---
+# Handle recommendation logic 
 if st.session_state.get("recs_triggered") and st.session_state.get("selected_base"):
     base_title = st.session_state["selected_base"]
     recs = get_recommendations(df, matrix, base_title)
@@ -84,7 +84,7 @@ if st.session_state.get("recs_triggered") and st.session_state.get("selected_bas
         st.markdown("### 🔁 Similar Movies")
         st.dataframe(display_df.reset_index(drop=True))
 
-        # --- Overview and interaction ---
+        # Overview and interaction
         selected_rec_title = st.selectbox("📘 View details for:", recs["title"], key="select_details")
         selected_row = recs[recs["title"] == selected_rec_title]
 

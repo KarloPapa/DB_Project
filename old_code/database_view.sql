@@ -1,6 +1,6 @@
 USE comp373;
 
--- 1) One row per movie+genre
+-- 1. One row per movie+genre
 DROP VIEW IF EXISTS movie_genre_view;
 CREATE VIEW movie_genre_view AS
 SELECT
@@ -12,7 +12,7 @@ FROM movies m
 JOIN movie_genre mg USING (movie_id)
 JOIN genre       g  USING (genre_id);
 
--- 2) Aggregated genres per movie
+-- 2. Aggregated genres per movie
 DROP VIEW IF EXISTS movies_with_genres;
 CREATE VIEW movies_with_genres AS
 SELECT
